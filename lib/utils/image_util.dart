@@ -92,8 +92,8 @@ void loadPhotosInsertDB() async {
         }
       }
     }
-    log("Images loaded");
   }
+  log("Images loaded");
 }
 
 /// 获取图片创建时间

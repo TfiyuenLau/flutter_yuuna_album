@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_yuuna_album/pages/album_detail_page.dart';
+import 'package:flutter_yuuna_album/pages/smart_album_detail_page.dart';
 
 import '../services/photos_service.dart';
 
@@ -147,7 +148,7 @@ class AlbumsPageState extends State<AlbumsPage> {
               return _buildAlbumCategory(
                 context,
                 title: appAlbumTitle,
-                onTap: () => _navigateToSystemAlbumPage(context, appAlbumTitle),
+                onTap: () => _navigateToAppAlbumPage(context, appAlbumTitle),
               );
             },
           );
@@ -161,11 +162,11 @@ class AlbumsPageState extends State<AlbumsPage> {
   /// 智能相册类别组件
   Widget _buildSmartAlbumCategoryList() {
     final List<Map<String, dynamic>> smartAlbumCategories = [
-      {'title': '人物', 'icon': Icons.person},
-      {'title': '动物', 'icon': Icons.pets},
-      {'title': '植物', 'icon': Icons.park_rounded},
-      {'title': '风景', 'icon': Icons.landscape},
-      {'title': '文本', 'icon': Icons.text_snippet_rounded},
+      {'category': 'animal', 'title': '动物', 'icon': Icons.pets},
+      {'category': 'anime', 'title': '插画', 'icon': Icons.draw_rounded},
+      {'category': 'human', 'title': '人物', 'icon': Icons.person},
+      {'category': 'landscape', 'title': '风景', 'icon': Icons.landscape},
+      {'category': 'plant', 'title': '植物', 'icon': Icons.park_rounded},
     ];
 
     return ListView.builder(
@@ -177,10 +178,7 @@ class AlbumsPageState extends State<AlbumsPage> {
         return ListTile(
           leading: Icon(category['icon'] as IconData),
           title: Text(category['title'] as String),
-          onTap: () {
-            // 处理智能相册类别的点击事件
-            // 可以根据具体需求跳转到不同的页面或执行其他操作
-          },
+          onTap: () => _navigateToSmartAlbumPage(context, category['category'] as String, category['title'] as String),
         );
       },
     );
@@ -196,10 +194,21 @@ class AlbumsPageState extends State<AlbumsPage> {
     return dbHelper.getAppAlbumPathNames();
   }
 
-  void _navigateToSystemAlbumPage(BuildContext context, String albumTitle) {
+  void _navigateToAppAlbumPage(BuildContext context, String albumTitle) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AlbumDetailPage(albumTitle: albumTitle)),
+      MaterialPageRoute(builder:
+          (context) => AlbumDetailPage(albumTitle: albumTitle)
+      ),
+    );
+  }
+
+  void _navigateToSmartAlbumPage(BuildContext context, String category, String categoryName) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder:
+          (context) => SmartAlbumDetailPage(category: category, categoryTitle: categoryName)
+      ),
     );
   }
 }

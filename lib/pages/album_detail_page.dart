@@ -22,7 +22,6 @@ class _AlbumDetailState extends State<AlbumDetailPage> {
   /// 从sqlite数据库中加载图片
   void _getImages() async {
     PhotosService dbHelper = PhotosService();
-    log(widget.albumTitle);
     for (final photo in await dbHelper.getAlbumPhotos(widget.albumTitle)) {
       // log(photo.imagePath);
       _images.add(File(photo.imagePath));

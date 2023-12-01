@@ -1,0 +1,5 @@
+animal
+anime
+human
+landscape
+plant

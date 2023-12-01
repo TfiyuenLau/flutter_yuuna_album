@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:path/path.dart';
@@ -116,12 +117,12 @@ class PhotosService {
   }
 
   /// 获取对应相册的图片列表
-  Future<List<Photo>> getAlbumPhotos(String category) async {
+  Future<List<Photo>> getAlbumPhotos(String albumTitle) async {
     Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'photos',
       where: 'imagePath LIKE ?',
-      whereArgs: ['%$category%'],
+      whereArgs: ['%$albumTitle%'],
       orderBy: "createTime DESC",
       limit: 50, // 测试环境
     );
@@ -167,9 +168,45 @@ class PhotosService {
     return list.where((element) => !['Camera'].contains(element)).toSet().toList();
   }
 
+  /// 获取所有未参与分类的图片
+  Future<List<Photo>> getAnyNotCategoryPhotos() async {
+    Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'photos',
+      where:'status = ? or tags = ?',
+      whereArgs: [100, null],
+    );
+
+    return List.generate(maps.length, (i) {
+      return Photo.fromMap(maps[i]);
+    });
+  }
+
+  /// 获取对应类别图片的列表对象
+  Future<List<Photo>> getSmartCategoryAlbumPhotos(String category) async {
+    Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'photos',
+      where: 'tags LIKE ?',
+      whereArgs: ['%$category%'],
+      orderBy: "createTime DESC",
+      limit: 50, // 测试环境
+    );
+
+    return List.generate(maps.length, (i) {
+      return Photo.fromMap(maps[i]);
+    });
+  }
+
   /// 新增一条photo数据
   Future<int> insertPhoto(Photo photo) async {
     Database db = await database;
     return await db.insert("photos", photo.toMap());
+  }
+
+  /// 更新一条photo数据
+  Future<int> updatePhoto(Photo photo) async {
+    Database db = await database;
+    return await db.update("photos", photo.toMap(), where: "id = ?", whereArgs: [photo.id]);
   }
 }
