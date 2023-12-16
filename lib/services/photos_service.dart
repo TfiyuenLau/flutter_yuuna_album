@@ -198,6 +198,39 @@ class PhotosService {
     });
   }
 
+  /// 获取tags为human的所有人像分类标签
+  Future<List<String>> getHumanCategories() async {
+    Database db = await database;
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      '''
+      SELECT DISTINCT SUBSTR(tags, INSTR(tags, ',') + 1) AS category
+      FROM photos
+      WHERE tags LIKE 'human,%';
+      '''
+    );
+
+    List<String> categories = result.map((map) => map['category'].toString()).toList();
+    return categories;
+  }
+
+  /// 获取相册组件的封面图
+  Future<String> getPortraitAlbumFirstPhotoPath(String category) async {
+    Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'photos',
+      where: 'tags LIKE ?',
+      whereArgs: ['%$category%'],
+      orderBy: "createTime DESC",
+    );
+
+    if (maps.isNotEmpty) {
+      Photo photo = Photo.fromMap(maps[0]);
+      return photo.imagePath;
+    } else {
+      return ''; // 返回一个空字符串或其他默认值，表示没有图片
+    }
+  }
+
   /// 新增一条photo数据
   Future<int> insertPhoto(Photo photo) async {
     Database db = await database;

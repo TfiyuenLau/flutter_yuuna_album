@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_yuuna_album/pages/album_detail_page.dart';
+import 'package:flutter_yuuna_album/pages/portrait_albums_page.dart';
 import 'package:flutter_yuuna_album/pages/smart_album_detail_page.dart';
 
 import '../services/photos_service.dart';
@@ -176,10 +177,17 @@ class AlbumsPageState extends State<AlbumsPage> {
       itemBuilder: (context, index) {
         final category = smartAlbumCategories[index];
         return ListTile(
-          leading: Icon(category['icon'] as IconData),
-          title: Text(category['title'] as String),
-          onTap: () => _navigateToSmartAlbumPage(context, category['category'] as String, category['title'] as String),
-        );
+            leading: Icon(category['icon'] as IconData),
+            title: Text(category['title'] as String),
+            onTap: () {
+              // Check if the selected category is "human"
+              if (category['category'] == 'human') {
+                _navigateToPortraitAlbumPage(context);
+              } else {
+                _navigateToSmartAlbumPage(
+                    context, category['category'] as String, category['title'] as String);
+              }
+            });
       },
     );
   }
@@ -197,18 +205,23 @@ class AlbumsPageState extends State<AlbumsPage> {
   void _navigateToAppAlbumPage(BuildContext context, String albumTitle) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder:
-          (context) => AlbumDetailPage(albumTitle: albumTitle)
-      ),
+      MaterialPageRoute(builder: (context) => AlbumDetailPage(albumTitle: albumTitle)),
     );
   }
 
   void _navigateToSmartAlbumPage(BuildContext context, String category, String categoryName) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder:
-          (context) => SmartAlbumDetailPage(category: category, categoryTitle: categoryName)
-      ),
+      MaterialPageRoute(
+          builder: (context) =>
+              SmartAlbumDetailPage(category: category, categoryTitle: categoryName)),
+    );
+  }
+
+  void _navigateToPortraitAlbumPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PortraitAlbumsPage()),
     );
   }
 }
